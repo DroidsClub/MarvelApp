@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:marvel_api_app/model/marvel_data.dart';
+import 'package:marvel_api_app/model/md5_data.dart';
+import 'package:marvel_api_app/services/marvel_api_client.dart';
+import 'package:marvel_api_app/services/md5_api_client.dart';
 
 void main() => runApp( const Root());
+
+String publicKey = "df460e7b04d986419acf029680a28d60";
+String privateKey = "ebbc27080f123549ff61d4eb5101bad61f4bac26";
 
 class Root extends StatelessWidget {
   const Root({Key? key}) : super(key: key);
@@ -21,9 +28,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  Md5Client client = Md5Client();
+  Md5 data = Md5();
+  MarvelApiClient marvelClient = MarvelApiClient();
+  MarvelData? marvelData = MarvelData();
+
+  Future<void> getData() async {
+    data = await client.getMd5Data(publicKey, privateKey);
+  }  
+  
+  Future<String> getCharacterName() async {
+    marvelData = await marvelClient.getMarvelData(data!.timeStamp.toString(), publicKey, data!.md5hash.toString());
+    characterName = marvelData!.data!.results!.first.name!;
+    return characterName;
+  }
+
+  String characterName = getCharacterName();
+  
+  @override
+  void initState() {
+    getData();
+    getCharacterName();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle style =
+
     ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20),);
     return Scaffold(
       appBar: AppBar(
@@ -49,45 +81,58 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-                Expanded(child: Image.asset("images/scene-Iron-Man.jpg")),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const[
-                    Text("Name:")
-                  ],
-                ),
-                const SizedBox(width: 120.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const[
-                    Text("#")
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(height: 120.0),
+      body: FutureBuilder(
+        future: getCharacterName(),
+        builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.done) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(child: Image.asset("images/scene-Iron-Man.jpg")),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const[
+                          Text("Name:")
+                        ],
+                      ),
+                      const SizedBox(width: 120.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(characterName)
+                        ],
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 120.0),
                   Container(
                     margin: const EdgeInsets.all(10),
                     width: double.infinity,
                     height: 50.0,
                     child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Call")
+                        onPressed: () {},
+                        child: const Text("Call")
                     ),
                   ),
                   const SizedBox(height: 100.0)
                 ],
-        ),
+              ),
+            );
+          }
+          else if(snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+          child: CircularProgressIndicator(),
+          );
+          }
+          return Container();
+        },
       )
     );
   }

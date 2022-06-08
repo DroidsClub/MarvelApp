@@ -29,10 +29,10 @@ class Data {
 class MarvelData {
   Data? data;
 
-  MarvelData(this.data);
+  MarvelData({this.data});
 
-  factory MarvelData.fromJson(dynamic json) {
-    return MarvelData(Data.fromJson(json['data']));
+  MarvelData.fromJson(dynamic json) {
+    data = json["data"];
   }
 }
 
