@@ -7,14 +7,14 @@ import 'package:marvel_api_app/model/md5_data.dart';
 
 class MarvelApiClient {
 
-  Future<MarvelData> getMarvelData(String ts, String apiKey, String hash) async {
-    var endpoint = Uri.parse("http://gateway.marvel.com/v1/public/characters?name=Hulk&ts=$ts&apikey=$apiKey&hash=$hash");
+  Future<String> getMarvelData(String ts, String apiKey, String hash) async {
+    var endpoint = Uri.parse("http://gateway.marvel.com/v1/public/characters?name=Absorbing%20Man&ts=$ts&apikey=$apiKey&hash=$hash");
 
     var response = await http.get(endpoint);
-    var body = jsonDecode(response.body);
-    print(body);
+    var body = jsonDecode(response.body)['data'];
+    print(body['results'][0]['name']);
 
-    return MarvelData.fromJson(body);
+    return body['results'][0]['name'];
 
   }
 

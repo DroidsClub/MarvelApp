@@ -29,29 +29,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  Md5Client client = Md5Client();
-  Md5 data = Md5();
-  MarvelApiClient marvelClient = MarvelApiClient();
-  MarvelData? marvelData = MarvelData();
+  Md5Client md5Client = Md5Client();
+  String characterName = "";
 
-  Future<void> getData() async {
-    data = await client.getMd5Data(publicKey, privateKey);
-  }  
-  
-  Future<String> getCharacterName() async {
-    marvelData = await marvelClient.getMarvelData(data!.timeStamp.toString(), publicKey, data!.md5hash.toString());
-    characterName = marvelData!.data!.results!.first.name!;
-    return characterName;
+ _handleAsync() async {
+    md5Client.getMd5Data(publicKey, privateKey).then((value) =>  setState(() {
+      characterName = value;
+    }));
   }
 
-  String characterName = getCharacterName();
-  
   @override
   void initState() {
-    getData();
-    getCharacterName();
+    super.initState();
+    _handleAsync();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -81,11 +72,8 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: getCharacterName(),
-        builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.done) {
-            return Center(
+      body:
+            Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -106,7 +94,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(characterName)
+                          Text(characterName),
                         ],
                       )
                     ],
@@ -124,15 +112,6 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 100.0)
                 ],
               ),
-            );
-          }
-          else if(snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-          child: CircularProgressIndicator(),
-          );
-          }
-          return Container();
-        },
       )
     );
   }
