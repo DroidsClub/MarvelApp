@@ -37,4 +37,11 @@ class MarvelData {
 }
 
 
+class CharacterData {
+  String? name;
+  String? photo;
+
+  CharacterData(this.name, this.photo);
+}
+
 
