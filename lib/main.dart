@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_api_app/model/marvel_data.dart';
-import 'package:marvel_api_app/model/md5_data.dart';
 import 'package:marvel_api_app/services/marvel_api_client.dart';
 import 'package:marvel_api_app/services/md5_api_client.dart';
+
+import 'model/md5_data.dart';
 
 void main() => runApp( const Root());
 
@@ -30,27 +31,49 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   Md5Client md5Client = Md5Client();
-  String characterName = "";
+  MarvelApiClient marvelClient = MarvelApiClient();
+  String characterName = "initialized value";
+  String characterPhoto = "https://seeklogo.com/images/M/marvel-comics-logo-B9EA67A8EE-seeklogo.com.png";
 
- _handleAsync() async {
-    md5Client.getMd5Data(publicKey, privateKey).then((value) =>  setState(() {
-      characterName = value;
-    }));
+  void _retrieveCharacter() async {
+    String searchInput = "3-D Man";
+
+    Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
+
+    print("[HomePage][_retrieveCharacter] - Printing getMd5Data result with hash: ${hashResponse.md5hash} and timestamp ${hashResponse.timeStamp}");
+    CharacterData retrievedCharacter = await marvelClient.getMarvelData(hashResponse.timeStamp!, publicKey, hashResponse.md5hash!, searchInput);
+    setState(() {
+      characterName = retrievedCharacter.name!;
+      characterPhoto = retrievedCharacter.photo!;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _handleAsync();
+    _retrieveCharacter();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20),);
+    // return MaterialApp(
+    //   title: 'Marvel App',
+    //   theme: ThemeData(
+    //     brightness: Brightness.dark,
+    //     primaryColor: Colors.green,
+    //     secondaryHeaderColor: Colors.deepOrangeAccent
+    //   ),
+    //   home: const Scaffold(
+    //     body: Center(
+    //       child:Text('DroidClub’s Marvel App')
+    //     )
+    //   )
+    // );
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Marvel API"),
+        title: const Text("DroidClub’s Marvel API"),
         actions: [
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
@@ -77,7 +100,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(child: Image.asset("images/scene-Iron-Man.jpg")),
+                  Expanded(child: Image.network(characterPhoto)),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -116,5 +139,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
