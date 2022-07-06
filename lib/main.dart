@@ -56,21 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    // return MaterialApp(
-    //   title: 'Marvel App',
-    //   theme: ThemeData(
-    //     brightness: Brightness.dark,
-    //     primaryColor: Colors.green,
-    //     secondaryHeaderColor: Colors.deepOrangeAccent
-    //   ),
-    //   home: const Scaffold(
-    //     body: Center(
-    //       child:Text('DroidClub’s Marvel App')
-    //     )
-    //   )
-    // );
-
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text("DroidClub’s Marvel API"),
