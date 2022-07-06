@@ -32,11 +32,14 @@ class _HomePageState extends State<HomePage> {
 
   Md5Client md5Client = Md5Client();
   MarvelApiClient marvelClient = MarvelApiClient();
+  int characterId = 0;
   String characterName = "initialized value";
   String characterPhoto = "https://seeklogo.com/images/M/marvel-comics-logo-B9EA67A8EE-seeklogo.com.png";
+  String comicTitle = "";
+  String comicPhoto = "";
 
   void _retrieveCharacter() async {
-    String searchInput = "3-D Man";
+    String searchInput = "Vision";
 
     Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
 
@@ -45,6 +48,17 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       characterName = retrievedCharacter.name!;
       characterPhoto = retrievedCharacter.photo!;
+      characterId = retrievedCharacter.id!;
+    });
+  }
+
+  void _retrieveComic(int characterId) async {
+    Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
+    print("[HomePage][_retrieveComic] - Printing getMd5Data result with hash: ${hashResponse.md5hash} and timestamp ${hashResponse.timeStamp}");
+    ComicData retrievedComic = await marvelClient.getComicData(hashResponse.timeStamp!, publicKey, hashResponse.md5hash!, characterId);
+    setState(() {
+      comicTitle = retrievedComic.title!;
+      comicPhoto = retrievedComic.photo!;
     });
   }
 
@@ -52,11 +66,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _retrieveCharacter();
+    _retrieveComic(1009697);
   }
 
   @override
   Widget build(BuildContext context) {
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("DroidClub’s Marvel API"),
@@ -86,7 +101,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(child: Image.network(characterPhoto)),
+                  Expanded(child: Image.network(comicPhoto)),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -95,15 +110,15 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const[
-                          Text("Name:")
+                          Text("Title:")
                         ],
                       ),
-                      const SizedBox(width: 120.0),
+                      const SizedBox(width: 80.0),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(characterName),
+                          Text(comicTitle),
                         ],
                       )
                     ],
@@ -113,9 +128,17 @@ class _HomePageState extends State<HomePage> {
                     margin: const EdgeInsets.all(10),
                     width: double.infinity,
                     height: 50.0,
-                    child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Call")
+                    child: Row(
+                      children: [
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children:[Expanded(child: Image.network(characterPhoto))]),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children:[Text('Name: $characterName')])
+                      ],
                     ),
                   ),
                   const SizedBox(height: 100.0)

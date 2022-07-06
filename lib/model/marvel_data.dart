@@ -38,13 +38,20 @@ class MarvelData {
 
 
 class CharacterData {
-  String? name;
-  String? photo;
+  int? id;
+  String? name, photo;
 
-  CharacterData(this.name, this.photo) {
-    print('Character name: $name, imgUrl: $photo');
+  CharacterData(this.id, this.name, this.photo) {
+    print('Character Details: $name, imgUrl: $photo with ID: $id');
   }
-
 }
 
+class ComicData {
+  int? id;
+  String? title, photo;
+
+  ComicData(this.id, this.title, this.photo){
+    print('Comic Details: $title, imgUrl: $photo with ID: $id');
+  }
+}
 
