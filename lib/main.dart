@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:marvel_api_app/model/marvel_data.dart';
-import 'package:marvel_api_app/model/md5_data.dart';
 import 'package:marvel_api_app/services/marvel_api_client.dart';
 import 'package:marvel_api_app/services/md5_api_client.dart';
+
+import 'model/md5_data.dart';
 
 void main() => runApp( const Root());
 
@@ -30,27 +31,50 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   Md5Client md5Client = Md5Client();
-  String characterName = "";
+  MarvelApiClient marvelClient = MarvelApiClient();
+  int characterId = 0;
+  String characterName = "initialized value";
+  String characterPhoto = "https://seeklogo.com/images/M/marvel-comics-logo-B9EA67A8EE-seeklogo.com.png";
+  String comicTitle = "";
+  String comicPhoto = "";
 
- _handleAsync() async {
-    md5Client.getMd5Data(publicKey, privateKey).then((value) =>  setState(() {
-      characterName = value;
-    }));
+  void _retrieveCharacter() async {
+    String searchInput = "Vision";
+
+    Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
+
+    print("[HomePage][_retrieveCharacter] - Printing getMd5Data result with hash: ${hashResponse.md5hash} and timestamp ${hashResponse.timeStamp}");
+    CharacterData retrievedCharacter = await marvelClient.getMarvelData(hashResponse.timeStamp!, publicKey, hashResponse.md5hash!, searchInput);
+    setState(() {
+      characterName = retrievedCharacter.name!;
+      characterPhoto = retrievedCharacter.photo!;
+      characterId = retrievedCharacter.id!;
+    });
+  }
+
+  void _retrieveComic(int characterId) async {
+    Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
+    print("[HomePage][_retrieveComic] - Printing getMd5Data result with hash: ${hashResponse.md5hash} and timestamp ${hashResponse.timeStamp}");
+    ComicData retrievedComic = await marvelClient.getComicData(hashResponse.timeStamp!, publicKey, hashResponse.md5hash!, characterId);
+    setState(() {
+      comicTitle = retrievedComic.title!;
+      comicPhoto = retrievedComic.photo!;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    _handleAsync();
+    _retrieveCharacter();
+    _retrieveComic(1009697);
   }
 
   @override
   Widget build(BuildContext context) {
 
-    ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20),);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Marvel API"),
+        title: const Text("DroidClub’s Marvel API"),
         actions: [
           PopupMenuButton(
             icon: const Icon(Icons.more_vert),
@@ -77,7 +101,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(child: Image.asset("images/scene-Iron-Man.jpg")),
+                  Expanded(child: Image.network(comicPhoto)),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -86,15 +110,15 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const[
-                          Text("Name:")
+                          Text("Title:")
                         ],
                       ),
-                      const SizedBox(width: 120.0),
+                      const SizedBox(width: 80.0),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(characterName),
+                          Text(comicTitle),
                         ],
                       )
                     ],
@@ -104,9 +128,17 @@ class _HomePageState extends State<HomePage> {
                     margin: const EdgeInsets.all(10),
                     width: double.infinity,
                     height: 50.0,
-                    child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Call")
+                    child: Row(
+                      children: [
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children:[Expanded(child: Image.network(characterPhoto))]),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children:[Text('Name: $characterName')])
+                      ],
                     ),
                   ),
                   const SizedBox(height: 100.0)
@@ -116,5 +148,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
