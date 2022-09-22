@@ -36,31 +36,57 @@ class MarvelApiClient {
     }
   }
 
-  Future<ComicData> getComicData(
-      String ts, String apiKey, String hash, int characterId) async{
+  Future<List<ComicData>> getComicData(
+      String ts, String apiKey, String hash, int characterId) async {
     var comicEndpoint = Uri.parse(
         "https://gateway.marvel.com/v1/public/characters/$characterId/comics?ts=$ts&apikey=$apiKey&hash=$hash");
 
     var response = await http.get(comicEndpoint);
 
     try{
-      var body = jsonDecode(response.body)['data'];
-      String path = body['results'][12]['images'][0]['path'];
-      String extension = body['results'][12]['images'][0]['extension'];
-      String comicPhoto = Uri.parse("$path.$extension").toString();
+      Map myMap = jsonDecode(response.body)['data'];
+      Iterable resultItems = myMap['results'];
+      List<ComicData> comics = resultItems.map((comicJson) => ComicData.fromJson(comicJson)).toList();
+
+      // var body = jsonDecode(response.body)['data'];
+      // String path = body['results'][12]['images'][0]['path'];
+      // String extension = body['results'][12]['images'][0]['extension'];
+      // String comicPhoto = Uri.parse("$path.$extension").toString();
 
       print(
-          "[MarvelApiClient][getMarvelData] - Comic title: ${body['results'][0]['title']}");
+          "[MarvelApiClient][getMarvelData] - Comic titles: ${comics.map((e) => e.title)}");
       print(
-          "[MarvelApiClient][getMarvelData] - Comic photo: $path.$extension");
+          "[MarvelApiClient][getMarvelData] - Num of images found: ${comics.map((e) => " ${e.images.length}")}");
 
-      String comicTitle = body['results'][2]['title'];
-      int comicId = body['results'][2]['id'];
-      return ComicData(comicId, comicTitle, comicPhoto);
+      // String comicTitle = body['results'][2]['title'];
+      // int comicId = body['results'][2]['id'];
+      // return ComicData(comicId, comicTitle, comicPhoto);
+      return comics;
     } catch (e) {
       print(
           "[MarvelApiClient][getComicData] - Exception thrown with error $e");
-      return ComicData(null, "Unknown characterId: $characterId", null);
+      return List.empty();
+    }
+  }
+
+  Future<CreatorInfo> getCreatorInfo(
+      String ts, String apiKey, String hash, String searchUrl
+      ) async {
+
+    var endpoint = Uri.parse("$searchUrl?ts=$ts&apikey=$apiKey&hash=$hash");
+
+    var response =  await http.get(endpoint);
+    print("[MarvelApiClient][getCreatorInfo] - Status: ${response.statusCode}");
+
+    try{
+      var creatorJson = jsonDecode(response.body)['data']['results'][0];
+      var foo = CreatorInfo.fromJson(creatorJson);
+      print('foo -> $foo');
+      return foo;
+    }catch (e){
+      print(
+          "[MarvelApiClient][getCreatorInfo] - Exception thrown with error $e");
+      return CreatorInfo("Dr.Fail", ImageObject(null, null));
     }
   }
 
