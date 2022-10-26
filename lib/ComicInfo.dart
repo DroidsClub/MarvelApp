@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_api_app/model/marvel_data.dart';
 import 'package:marvel_api_app/services/marvel_api_client.dart';
 import 'package:marvel_api_app/services/md5_api_client.dart';
 
-import 'model/md5_data.dart';
+import 'models/marvelModels/ComicDataModel.dart';
+import 'models/marvelModels/CreatorInfoModel.dart';
+import 'models/marvelModels/ImageObjectModel.dart';
+import 'models/md5Model.dart';
 
 
 String publicKey = "df460e7b04d986419acf029680a28d60";
@@ -124,10 +126,10 @@ class _ComicInfoState extends State<ComicInfo> {
                       SizedBox(
                           width: 75,
                           height: 75,
-                          child: Image.network(
-                              handleImageConstruction(creator!.image))),
-                      Text(creator!.fullName, style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.w200))
+                          child: creator != null? Image.network(
+                              handleImageConstruction(creator!.image)) : const Text('No creator image found')),
+                      creator != null?  Text(creator!.fullName, style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.w200)) : Text('No creator name found')
                     ],
                   ),
                   const SizedBox(width: 35),
@@ -136,7 +138,7 @@ class _ComicInfoState extends State<ComicInfo> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text("Pages: ${widget.comic.pageCount}"),
-                        Text("Price: ${widget.comic.pageCount}"),
+                        Text("Price: \$${widget.comic.price.price}"),
                         // replace with price
                       ],
                     ),),

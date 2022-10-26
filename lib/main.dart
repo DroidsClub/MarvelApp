@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:marvel_api_app/ComicInfo.dart';
-import 'package:marvel_api_app/model/marvel_data.dart';
+import 'package:marvel_api_app/models/marvelModels/CharacterDataModel.dart';
 import 'package:marvel_api_app/services/marvel_api_client.dart';
 import 'package:marvel_api_app/services/md5_api_client.dart';
 
-import 'model/md5_data.dart';
+import 'models/marvelModels/ComicDataModel.dart';
+import 'models/md5Model.dart';
 
 void main() => runApp(const Root());
 
@@ -48,8 +49,7 @@ class _HomePageState extends State<HomePage> {
     Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
 
     print(
-        "[HomePage][_retrieveCharacter] - Printing getMd5Data result with hash: ${hashResponse
-            .md5hash} and timestamp ${hashResponse.timeStamp}");
+        "[HomePage][_retrieveCharacter] - Printing getMd5Data result with hash: ${hashResponse.md5hash} and timestamp ${hashResponse.timeStamp}");
     CharacterData retrievedCharacter = await marvelClient.getMarvelData(
         hashResponse.timeStamp!, publicKey, hashResponse.md5hash!, character);
     setState(() {
@@ -63,14 +63,14 @@ class _HomePageState extends State<HomePage> {
   void _retrieveComic(int characterId) async {
     Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
     print(
-        "[HomePage][_retrieveComic] - Printing getMd5Data result with hash: ${hashResponse
-            .md5hash} and timestamp ${hashResponse.timeStamp}");
+        "[HomePage][_retrieveComic] - Printing getMd5Data result with hash: ${hashResponse.md5hash} and timestamp ${hashResponse.timeStamp}");
     List<ComicData> retrievedComics = await marvelClient.getComicData(
         hashResponse.timeStamp!, publicKey, hashResponse.md5hash!, characterId);
     setState(() {
       comics = retrievedComics;
       comicItems = retrievedComics
-          .map((foundComics) => ComicItem(foundComics.images, foundComics.title ?? ""))
+          .map((foundComics) =>
+              ComicItem(foundComics.images, foundComics.title ?? ""))
           .toList();
     });
   }
@@ -103,31 +103,30 @@ class _HomePageState extends State<HomePage> {
             image: item.getImageToShow(context).image,
             child: InkWell(
               onTap: () {
-                debugPrint('${comic.title} has been tapped, opening comic info');
+                debugPrint(
+                    '${comic.title} has been tapped, opening comic info');
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ComicInfo(comic: comic)
-                    )
-                );
+                        builder: (context) => ComicInfo(comic: comic)));
               },
               child: Container(
-                padding: const EdgeInsets.all(5.0),
-                alignment: Alignment.bottomCenter,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: const Alignment(0, 0.05),
-                    end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Colors.black.withAlpha(0),
-                      Colors.black38,
-                      Colors.black54,
-                      Colors.black87,
-                      Colors.black
-                    ],
+                  padding: const EdgeInsets.all(5.0),
+                  alignment: Alignment.bottomCenter,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: const Alignment(0, 0.05),
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Colors.black.withAlpha(0),
+                        Colors.black38,
+                        Colors.black54,
+                        Colors.black87,
+                        Colors.black
+                      ],
+                    ),
                   ),
-                ),
-                child: item.buildTitle(context)),
+                  child: item.buildTitle(context)),
             ),
           ),
         ));
@@ -139,13 +138,15 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: const Text("DroidClub’s Marvel API"),
           actions: [
+            IconButton(
+                onPressed: () => {debugPrint("hello world")},
+                icon: const Icon(Icons.search)),
             PopupMenuButton(
-              icon: const Icon(Icons.more_vert),
-              itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry>[
+              icon: const Icon(Icons.more_horiz),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 const PopupMenuItem(
                   child:
-                  ListTile(leading: Icon(Icons.add), title: Text('Search')),
+                      ListTile(leading: Icon(Icons.add), title: Text('Search')),
                 ),
                 const PopupMenuItem(
                   child: ListTile(
@@ -155,6 +156,15 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
             ),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.red,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home_outlined, color: Colors.white), activeIcon: Icon(Icons.home, color: Colors.white), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.people_outline, color: Colors.white), activeIcon: Icon(Icons.people, color: Colors.white), label: 'Characters'),
+            BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined, color: Colors.white), activeIcon: Icon(Icons.menu_book, color: Colors.white), label: 'Comics'),
+            BottomNavigationBarItem(icon: Icon(Icons.account_circle_outlined, color: Colors.white), activeIcon: Icon(Icons.account_circle, color: Colors.white), label: 'Profile'),
           ],
         ),
         body: Padding(
@@ -171,51 +181,50 @@ class _HomePageState extends State<HomePage> {
                       labelText: 'Search Character',
                     ),
                     controller: _searchController,
-                    onSubmitted: (String value){
+                    onSubmitted: (String value) {
                       setState(() {
                         _retrieveCharacter(_searchController.text);
                       });
                       _searchController.clear();
                     },
-
                   ),
                 ],
               ),
               const SizedBox(height: 10.0),
               Expanded(
                   child: Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: [
-                      SizedBox.expand(
-                          child: Image.network(
-                            characterPhoto,
-                            fit: BoxFit.cover,
-                          )),
-                      Container(
-                          padding: const EdgeInsets.all(5.0),
-                          alignment: Alignment.bottomCenter,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: const Alignment(0, 0.6),
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                Colors.black.withAlpha(0),
-                                Colors.black54,
-                                Colors.black87,
-                                Colors.black
-                              ],
-                            ),
-                          ),
-                          child: Text(
-                            characterName,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ))
-                    ],
+                alignment: AlignmentDirectional.bottomCenter,
+                children: [
+                  SizedBox.expand(
+                      child: Image.network(
+                    characterPhoto,
+                    fit: BoxFit.cover,
                   )),
+                  Container(
+                      padding: const EdgeInsets.all(5.0),
+                      alignment: Alignment.bottomCenter,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: const Alignment(0, 0.6),
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[
+                            Colors.black.withAlpha(0),
+                            Colors.black54,
+                            Colors.black87,
+                            Colors.black
+                          ],
+                        ),
+                      ),
+                      child: Text(
+                        characterName,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ))
+                ],
+              )),
               const SizedBox(height: 10.0),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -228,12 +237,12 @@ class _HomePageState extends State<HomePage> {
                 width: double.infinity,
                 height: 250.0,
                 child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: comicItems.length,
-                    itemBuilder: (context, index) {
-                      final ComicItem item = comicItems[index];
-                      return newComicCard(item, context, comics[index]);
-                    },
+                  scrollDirection: Axis.horizontal,
+                  itemCount: comicItems.length,
+                  itemBuilder: (context, index) {
+                    final ComicItem item = comicItems[index];
+                    return newComicCard(item, context, comics[index]);
+                  },
                 ),
               ),
               // const SizedBox(height: 100.0)
