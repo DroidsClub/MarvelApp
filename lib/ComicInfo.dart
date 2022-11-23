@@ -48,6 +48,7 @@ class _ComicInfoState extends State<ComicInfo> {
   }
 
   String handleImageConstruction(ImageObject img) {
+    print('${img.path}.${img.extension}');
     return '${img.path}.${img.extension}';
   }
 
