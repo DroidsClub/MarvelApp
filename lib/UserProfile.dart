@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'helpers/CustomAppBar.dart';
+import 'helpers/CustomBottomNavigationBar.dart';
 import 'models/marvelModels/CharacterDataModel.dart';
 import 'models/marvelModels/ComicDataModel.dart';
 import 'models/md5Model.dart';
@@ -33,7 +35,6 @@ class _UserProfileState extends State<UserProfile> {
 
   Icon customIcon = const Icon(Icons.search);
   Widget customTitle = const Text("DroidClub’s Marvel API");
-  final _searchController = TextEditingController();
 
   void _retrieveCharacter(String character) async {
     Md5 hashResponse = await md5Client.getMd5Data(publicKey, privateKey);
@@ -64,90 +65,42 @@ class _UserProfileState extends State<UserProfile> {
           .toList();
     });
   }
+  
+  void navBarTransition(int index) {
+    switch (index){
+      case 0:
+        debugPrint('Home page clicked');
+        break;
+      case 1:
+        debugPrint('Characters page clicked');
+        break;
+      case 2:
+        debugPrint('Comics page clicked');
+        break;
+      case 3:
+        debugPrint('User profile page clicked');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const UserProfile()));
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: customTitle,
-          actions: [
-            IconButton(
-                onPressed: () => {
-                      setState(() {
-                        if (customIcon.icon == Icons.search) {
-                          customIcon = const Icon(Icons.cancel);
-                          customTitle = ListTile(
-                            leading: const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                            title: TextField(
-                              decoration: const InputDecoration(
-                                hintText: 'find a character...',
-                                hintStyle: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                                border: InputBorder.none,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                              controller: _searchController,
-                              onSubmitted: (String value) {
-                                setState(() {
-                                  _retrieveCharacter(_searchController.text);
-                                });
-                                _searchController.clear();
-                              },
-                            ),
-                          );
-                        } else {
-                          customIcon = const Icon(Icons.search);
-                          customTitle = const Text('DroidClub’s Marvel API');
-                        }
-                      })
-                    },
-                icon: customIcon),
-            PopupMenuButton(
-              icon: const Icon(Icons.more_horiz),
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                const PopupMenuItem(
-                  child:
-                      ListTile(leading: Icon(Icons.add), title: Text('Search')),
-                ),
-                const PopupMenuItem(
-                  child: ListTile(
-                    leading: Icon(Icons.anchor),
-                    title: Text('Favourite'),
-                  ),
-                )
-              ],
-            ),
-          ],
+        appBar: CustomAppBar(
+            onCallBack: (String character) {
+              debugPrint("Test callback");
+              _retrieveCharacter(character);
+            }
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.red,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined, color: Colors.white),
-                activeIcon: Icon(Icons.home, color: Colors.white),
-                label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.people_outline, color: Colors.white),
-                activeIcon: Icon(Icons.people, color: Colors.white),
-                label: 'Characters'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.menu_book_outlined, color: Colors.white),
-                activeIcon: Icon(Icons.menu_book, color: Colors.white),
-                label: 'Comics'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle_outlined, color: Colors.white),
-                activeIcon: Icon(Icons.account_circle, color: Colors.white),
-                label: 'Profile'),
-          ],
+        bottomNavigationBar: CustomBottomNavigationBar(
+            onCallBack: (int index) {
+              debugPrint("Test callback");
+              navBarTransition(index);
+            }
         ),
         body: Column(
           children: [

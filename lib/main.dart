@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:marvel_api_app/ComicInfo.dart';
 import 'package:marvel_api_app/UserProfile.dart';
+import 'package:marvel_api_app/helpers/CustomAppBar.dart';
 import 'package:marvel_api_app/models/marvelModels/CharacterDataModel.dart';
 import 'package:marvel_api_app/services/marvel_api_client.dart';
 import 'package:marvel_api_app/services/md5_api_client.dart';
 
+import 'helpers/ComicCardHelper.dart';
+import 'helpers/CustomBottomNavigationBar.dart';
 import 'models/marvelModels/ComicDataModel.dart';
 import 'models/md5Model.dart';
 
@@ -46,12 +48,10 @@ class _HomePageState extends State<HomePage> {
   List<ComicData> comics = List.empty();
   List<ComicItem> comicItems = List.empty();
 
-  Icon customIcon = const Icon(Icons.search);
-  Widget customTitle = const Text("DroidClub’s Marvel API");
+  Icon customIcon = Icon(Icons.search);
+  Widget customTitle = Text("DroidClub’s Marvel API");
 
   int selectedIndex = 0;
-
-  final _searchController = TextEditingController();
 
   void navBarTransition(int index) {
     switch (index){
@@ -109,117 +109,20 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  Widget newComicCard(item, context, comic) {
-    return Card(
-        clipBehavior: Clip.antiAlias,
-        child: SizedBox(
-          width: 155,
-          child: Ink.image(
-            fit: BoxFit.fill,
-            image: item.getImageToShow(context).image,
-            child: InkWell(
-              onTap: () {
-                debugPrint(
-                    '${comic.title} has been tapped, opening comic info');
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ComicInfo(comic: comic)));
-              },
-              child: Container(
-                  padding: const EdgeInsets.all(5.0),
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: const Alignment(0, 0.05),
-                      end: Alignment.bottomCenter,
-                      colors: <Color>[
-                        Colors.black.withAlpha(0),
-                        Colors.black38,
-                        Colors.black54,
-                        Colors.black87,
-                        Colors.black
-                      ],
-                    ),
-                  ),
-                  child: item.buildTitle(context)),
-            ),
-          ),
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: customTitle,
-          actions: [
-            IconButton(
-                onPressed: () => {
-                      setState(() {
-                        if (customIcon.icon == Icons.search) {
-                          customIcon = const Icon(Icons.cancel);
-                          customTitle = ListTile(
-                            leading: const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                            title: TextField(
-                              decoration: const InputDecoration(
-                                hintText: 'find a character...',
-                                hintStyle: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                                border: InputBorder.none,
-                              ),
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                              controller: _searchController,
-                              onSubmitted: (String value) {
-                                setState(() {
-                                  _retrieveCharacter(_searchController.text);
-                                });
-                                _searchController.clear();
-                              },
-                            ),
-                          );
-                        } else {
-                          customIcon = const Icon(Icons.search);
-                          customTitle = const Text('DroidClub’s Marvel API');
-                        }
-                      })
-                    },
-                icon: customIcon),
-            PopupMenuButton(
-              icon: const Icon(Icons.more_horiz),
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                const PopupMenuItem(
-                  child:
-                      ListTile(leading: Icon(Icons.add), title: Text('Search')),
-                ),
-                const PopupMenuItem(
-                  child: ListTile(
-                    leading: Icon(Icons.anchor),
-                    title: Text('Favourite'),
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.red,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined, color: Colors.white), activeIcon: Icon(Icons.home, color: Colors.white), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.people_outline, color: Colors.white), activeIcon: Icon(Icons.people, color: Colors.white), label: 'Characters'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined, color: Colors.white), activeIcon: Icon(Icons.menu_book, color: Colors.white), label: 'Comics'),
-            BottomNavigationBarItem(icon: Icon(Icons.account_circle_outlined, color: Colors.white), activeIcon: Icon(Icons.account_circle, color: Colors.white), label: 'Profile'),
-          ],
-          onTap: (index) { navBarTransition(index);}
+      appBar: CustomAppBar(
+        onCallBack: (String character) {
+          debugPrint("Test callback");
+          _retrieveCharacter(character);
+        }
+      ),
+        bottomNavigationBar: CustomBottomNavigationBar(
+            onCallBack: (int index) {
+              debugPrint("Test callback");
+              navBarTransition(index);
+            }
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
@@ -276,11 +179,10 @@ class _HomePageState extends State<HomePage> {
                   itemCount: comicItems.length,
                   itemBuilder: (context, index) {
                     final ComicItem item = comicItems[index];
-                    return newComicCard(item, context, comics[index]);
-                  },
+                    return ComicCardHelper(comicItem: item, comic: comics[index]);
+                    },
                 ),
               ),
-              // const SizedBox(height: 100.0)
             ],
           ),
         ));
