@@ -5,8 +5,8 @@ import 'helpers/CustomBottomNavigationBar.dart';
 import 'models/marvelModels/CharacterDataModel.dart';
 import 'models/marvelModels/ComicDataModel.dart';
 import 'models/md5Model.dart';
-import 'services/marvel_api_client.dart';
-import 'services/md5_api_client.dart';
+import 'connectors/marvel_api_client.dart';
+import 'connectors/md5_api_client.dart';
 
 String publicKey = "df460e7b04d986419acf029680a28d60";
 String privateKey = "ebbc27080f123549ff61d4eb5101bad61f4bac26";
@@ -65,27 +65,6 @@ class _UserProfileState extends State<UserProfile> {
           .toList();
     });
   }
-  
-  void navBarTransition(int index) {
-    switch (index){
-      case 0:
-        debugPrint('Home page clicked');
-        break;
-      case 1:
-        debugPrint('Characters page clicked');
-        break;
-      case 2:
-        debugPrint('Comics page clicked');
-        break;
-      case 3:
-        debugPrint('User profile page clicked');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const UserProfile()));
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,12 +75,7 @@ class _UserProfileState extends State<UserProfile> {
               _retrieveCharacter(character);
             }
         ),
-        bottomNavigationBar: CustomBottomNavigationBar(
-            onCallBack: (int index) {
-              debugPrint("Test callback");
-              navBarTransition(index);
-            }
-        ),
+        bottomNavigationBar: const CustomBottomNavigationBar(),
         body: Column(
           children: [
             Container(

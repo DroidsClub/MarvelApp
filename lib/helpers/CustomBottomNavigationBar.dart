@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:marvel_api_app/Home.dart';
+import 'package:marvel_api_app/UserProfile.dart';
 
 typedef void MyCallback(int index);
 
 class CustomBottomNavigationBar extends StatefulWidget {
 
-  const CustomBottomNavigationBar({Key? key, required this.onCallBack,}) : super(key: key);
+  const CustomBottomNavigationBar({Key? key}) : super(key: key);
 
-  final MyCallback onCallBack;
 
   @override
   _CustomBottomNavigationBarState createState() => _CustomBottomNavigationBarState();
@@ -30,7 +31,32 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined, color: Colors.white), activeIcon: Icon(Icons.menu_book, color: Colors.white), label: 'Comics'),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle_outlined, color: Colors.white), activeIcon: Icon(Icons.account_circle, color: Colors.white), label: 'Profile'),
         ],
-        onTap: (index) { widget.onCallBack(index);}
+        onTap: (index) { navBarTransition(index);}
     );
+  }
+
+  void navBarTransition(int index) {
+    switch (index){
+      case 0:
+        debugPrint('Home page clicked');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const HomePage()));
+        break;
+      case 1:
+        debugPrint('Characters page clicked');
+        break;
+      case 2:
+        debugPrint('Comics page clicked');
+        break;
+      case 3:
+        debugPrint('User profile page clicked');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const UserProfile()));
+        break;
+    }
   }
 }
