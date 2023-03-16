@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:marvel_api_app/services/marvel_api_client.dart';
-import 'package:marvel_api_app/services/md5_api_client.dart';
+import 'package:marvel_api_app/connectors/marvel_api_client.dart';
+import 'package:marvel_api_app/connectors/md5_api_client.dart';
 
 import 'models/marvelModels/ComicDataModel.dart';
 import 'models/marvelModels/CreatorInfoModel.dart';
