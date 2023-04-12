@@ -39,6 +39,19 @@ class MarvelApiClient {
     }
   }
 
+  Future<List<ComicData>> getComics(String ts, String apiKey, String hash) async {
+    var comicEndpoint = Uri.parse("https://gateway.marvel.com/v1/public/comics?ts=$ts&apikey=$apiKey&hash=$hash");
+    var response = await http.get(comicEndpoint);
+    try{
+      Map myMap = jsonDecode(response.body)['data'];
+      Iterable resultItems = myMap['results'];
+      List<ComicData> parsedComics = resultItems.map((comicJson) => ComicData.fromJson(comicJson)).toList();
+      return parsedComics;
+    } catch (e) {
+      return List.empty();
+    }
+  }
+
   Future<CreatorInfo> getCreatorInfo(String ts, String apiKey, String hash, String searchUrl) async {
     var endpoint = Uri.parse("$searchUrl?ts=$ts&apikey=$apiKey&hash=$hash");
     var response =  await http.get(endpoint);

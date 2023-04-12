@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:marvel_api_app/Home.dart';
+import 'package:marvel_api_app/ComicList.dart';
 import 'package:marvel_api_app/UserProfile.dart';
 
 typedef void MyCallback(int index);
@@ -49,6 +50,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         break;
       case 2:
         debugPrint('Comics page clicked');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const ComicList()));
         break;
       case 3:
         debugPrint('User profile page clicked');
