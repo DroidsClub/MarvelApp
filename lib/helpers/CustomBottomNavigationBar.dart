@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:marvel_api_app/Home.dart';
-import 'package:marvel_api_app/ComicList.dart';
-import 'package:marvel_api_app/UserProfile.dart';
+import 'package:marvel_api_app/screens/CharacterList.dart';
+import 'package:marvel_api_app/screens/Home.dart';
+import 'package:marvel_api_app/screens/ComicList.dart';
+import 'package:marvel_api_app/screens/UserProfile.dart';
 
 typedef void MyCallback(int index);
 
 class CustomBottomNavigationBar extends StatefulWidget {
 
   const CustomBottomNavigationBar({Key? key}) : super(key: key);
-
 
   @override
   _CustomBottomNavigationBarState createState() => _CustomBottomNavigationBarState();
@@ -40,6 +40,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     switch (index){
       case 0:
         debugPrint('Home page clicked');
+        // TODO if coming from another page, pop items on stack till only home page is left
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -47,6 +48,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         break;
       case 1:
         debugPrint('Characters page clicked');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const CharactersList()));
         break;
       case 2:
         debugPrint('Comics page clicked');

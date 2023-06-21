@@ -10,4 +10,6 @@ class ImageObject {
   ImageObject.fromJson(Map<String, dynamic> json)
       : path = json['path'],
         extension = json['extension'];
+
+  String get imageAssetUrl => '$path.$extension';
 }
