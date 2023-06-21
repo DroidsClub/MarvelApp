@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:marvel_api_app/UserProfile.dart';
+
+
+import 'package:marvel_api_app/screens/UserProfile.dart';
 import 'package:marvel_api_app/models/marvelModels/CharacterDataModel.dart';
 import 'package:marvel_api_app/connectors/marvel_api_client.dart';
 import 'package:marvel_api_app/connectors/md5_api_client.dart';

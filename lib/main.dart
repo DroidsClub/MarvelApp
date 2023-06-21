@@ -1,6 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:marvel_api_app/Home.dart';
+import 'package:marvel_api_app/screens/Home.dart';
 
 void main() => runApp(const Root());
 
@@ -16,4 +17,3 @@ class Root extends StatelessWidget {
     );
   }
 }
-

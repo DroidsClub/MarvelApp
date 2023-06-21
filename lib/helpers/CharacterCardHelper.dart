@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:marvel_api_app/screens/ComicInfo.dart';
+import 'package:marvel_api_app/models/marvelModels/CharacterDataModel.dart';
 import 'package:marvel_api_app/models/marvelModels/ComicDataModel.dart';
 
-class ComicCardHelper extends StatefulWidget {
+class CharacterCardHelper extends StatefulWidget {
 
-  const ComicCardHelper({Key? key, required this.comicItem, required this.comic}) : super(key: key);
+  const CharacterCardHelper({Key? key, required this.character}) : super(key: key);
 
-  final dynamic comicItem;
-
-  final ComicData comic;
+  final dynamic character;
 
   @override
-  _ComicCardHelperState createState() => _ComicCardHelperState();
+  _CharacterCardHelperState createState() => _CharacterCardHelperState();
 }
 
-class _ComicCardHelperState extends State<ComicCardHelper> {
+class _CharacterCardHelperState extends State<CharacterCardHelper> {
 
   @override
   void initState() {
@@ -31,15 +30,15 @@ class _ComicCardHelperState extends State<ComicCardHelper> {
           height: 400,
           child: Ink.image(
             fit: BoxFit.fill,
-            image: widget.comicItem.getImageToShow(context).image,
+            image: Image.network(widget.character.photo!).image,
             child: InkWell(
               onTap: () {
                 debugPrint(
-                    '${widget.comic.title} has been tapped, opening comic info');
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ComicInfo(comic: widget.comic)));
+                    '${widget.character.name} has been tapped, opening comic info');
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => ComicInfo(comic: widget.comic)));
               },
               child: Container(
                   padding: const EdgeInsets.all(5.0),
@@ -57,9 +56,9 @@ class _ComicCardHelperState extends State<ComicCardHelper> {
                       ],
                     ),
                   ),
-                  child: widget.comicItem.buildTitle(context)),
+                  child: Text(widget.character.name!, style: const TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.clip)),
             ),
           ),
-        ));
+        )));
   }
 }

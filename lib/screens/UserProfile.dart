@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'helpers/CustomAppBar.dart';
-import 'helpers/CustomBottomNavigationBar.dart';
-import 'models/marvelModels/CharacterDataModel.dart';
-import 'models/marvelModels/ComicDataModel.dart';
-import 'models/md5Model.dart';
-import 'connectors/marvel_api_client.dart';
-import 'connectors/md5_api_client.dart';
+import '../helpers/CustomAppBar.dart';
+import '../helpers/CustomBottomNavigationBar.dart';
+import '../models/marvelModels/CharacterDataModel.dart';
+import '../models/marvelModels/ComicDataModel.dart';
+import '../models/md5Model.dart';
+import '../connectors/marvel_api_client.dart';
+import '../connectors/md5_api_client.dart';
 
 String publicKey = "df460e7b04d986419acf029680a28d60";
 String privateKey = "ebbc27080f123549ff61d4eb5101bad61f4bac26";
